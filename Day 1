@@ -54,7 +54,7 @@ DROP: 1.DROP is a Data Defination Language Command (DDL).
               
 5. How you can find 5th max salary?(Do it by all 3 ways)
               
--- creating Employee table in Oracle
+-- creating Employee table in Mysql
 CREATE TABLE Employee (name varchar(10), salary int);
 
 -- inserting sample data into Employee table
