@@ -30,6 +30,76 @@ DROP: 1.DROP is a Data Defination Language Command (DDL).
       
       Syntax:
       DROP TABLE table_name;
-     
+      
+2. What are alias in MySQL?
+   Alias is used to give a name to a table or column. But this name is temporary. Created using AS keyword.
+   few uses: 1.It is used to make the column names more readable
+             2.An Alias only exist for that particular query
+   for example : SELECT column_names FROM table_name AS table_alias_name;
+                 SELECT Cust_id AS ID, Cust_name AS Customer FROM Customers; ----> Here the we have given alias/different name for cust_id column as ID.
+                 
+3. How do you display even rows of the any table?
+   Using mod() function!
+              select employee_id, first_name from employees where mod(employee_id, 2)=1;
+              
+              idea here is to take a column which has indexes and used mod function to filter it out
+
+4. How can you remove duplicates from a table(distinct and other way)?
+   Method 1 : Using INNER JOIN 
+              Delete column_with_dublicates FROM table_name AS table_alias(T1) 
+              INNER JOIN same_table_name as table_alias(T2) 
+              WHERE T1.column_with_dublicates < T2.column_with_dublicates
+   Method 2 : Creating another table without dublicates
+              CREATE TABLE copy_of_source_table_name SELECT DISTINCT columns_which_you_want or * FROM source_table;
+              
+5. How you can find 5th max salary?(Do it by all 3 ways)
+              
+-- creating Employee table in Oracle
+CREATE TABLE Employee (name varchar(10), salary int);
+
+-- inserting sample data into Employee table
+INSERT INTO Employee VALUES ('stan', 3000);
+INSERT INTO Employee VALUES ('mahi', 4000);
+INSERT INTO Employee VALUES ('avi', 3000);
+INSERT INTO Employee VALUES ('atharv', 5000);
+INSERT INTO Employee VALUES ('saurab', 7000);
+INSERT INTO Employee VALUES ('pavan', 7000);
+INSERT INTO Employee VALUES ('sumit', 7000);
+INSERT INTO Employee VALUES ('ajay', 7000);
+
+Way 1 : 
+SELECT name, salary 
+FROM Employee e1
+WHERE N-1 = (SELECT COUNT(DISTINCT salary) FROM Employee e2
+WHERE e2.salary > e1.salary)
+
+For 3rd Highest.
+
+SELECT name, salary 
+FROM Employee e1
+WHERE 3 = (SELECT COUNT(DISTINCT salary) FROM Employee e2
+WHERE e2.salary > e1.salary)
+
+way 2 : TOP KEYWORD
+
+SELECT TOP 1 salary
+FROM ( SELECT DISTINCT TOP N salary
+FROM Employee
+ORDER BY salary DESC) AS temp
+ORDER BY salary
+
+For Top 3
+
+SELECT TOP 1 salary
+FROM ( SELECT DISTINCT TOP 3 salary
+FROM Employee
+ORDER BY salary DESC) AS temp
+ORDER BY salary
+             
+Way 3 : LIMIT KEYWORD
+
+SELECT salary FROM Employee ORDER BY salary DESC LIMIT N-1, 1
+
+
 
       
