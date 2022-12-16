@@ -1,0 +1,35 @@
+1. What is the difference between truncate, delete, drop?
+DELETE : 1.Delete is a Data manipulation Language Command (DML).
+         2.we can use DELETE to delete one tuple of a table.
+         3.we can use WHERE command in DELETE.
+         4.Slower than TRUNCATE
+         5.Can be rolled back
+         6.Does not remove the Tuple permanently
+         
+         Syntax:
+         //without where clause -> removes all the records.
+         DELETE FROM table_name;
+         
+         //with where clause -> removed specific records.
+         DELETE FROM table_name WHERE conditions;
+         
+TRUNCATE : 1.TRUNCATE is a Data Defination Language Command (DDL).
+           2.we can use it to delete all the tuples of the table.
+           3.faster compared to delete.
+           4.We cannot use WHERE command in TRUNCATE.
+           5.Cannot be rolled back.
+           6.Truncate removes the entire records.
+           
+           Syntax:
+           //Remove all records
+           TRUNCATE TABLE table_name;
+           
+DROP: 1.DROP is a Data Defination Language Command (DDL).
+      2.DROP command removes all records and indexes.
+      3.we cannot roll back.
+      
+      Syntax:
+      DROP TABLE table_name;
+     
+
+      
