@@ -1,0 +1,157 @@
+-- create database test;
+-- use test
+-- drop table if exists cars;
+-- create table if not exists cars
+-- (
+--     id      int,
+--     model   varchar(50),
+--     brand   varchar(40),
+--     color   varchar(30),
+--     make    int
+-- );
+
+-- Create a table and insert values! 
+
+-- insert into cars values (1, 'Model S', 'Tesla', 'Blue', 2018);
+-- insert into cars values (2, 'EQS', 'Mercedes-Benz', 'Black', 2022);
+-- insert into cars values (3, 'iX', 'BMW', 'Red', 2022);
+-- insert into cars values (4, 'Ioniq 5', 'Hyundai', 'White', 2021);
+-- insert into cars values (5, 'Model S', 'Tesla', 'Silver', 2018);
+-- insert into cars values (6, 'Ioniq 5', 'Hyundai', 'Green', 2021);
+
+-- identify dublicate rows
+
+-- select model,brand,count(*) as "number of entries"
+-- from cars
+-- group by model,brand
+
+# model, brand, number of entries
+-- 'Model S', 'Tesla', '2'
+-- 'EQS', 'Mercedes-Benz', '1'
+-- 'iX', 'BMW', '1'
+-- 'Ioniq 5', 'Hyundai', '2'
+
+-- to fetch the dublicate records using group by and having clause
+
+-- select model,brand,count(*) as "number of entries"
+-- from cars
+-- group by model,brand
+-- having count(*)>1
+
+-- # model, brand, number of entries
+-- 'Model S', 'Tesla', '2'
+-- 'Ioniq 5', 'Hyundai', '2'
+
+-- here they have a unique identification number. so if 
+-- we use max function and select the entries which have the maximum 
+-- index number we can use that to delete the record.
+
+-- select model,brand,count(*) as "number of entries",max(id)
+-- from cars
+-- group by model,brand
+-- having count(*)>1
+
+-- # model, brand, number of entries, max(id)
+-- 'Model S', 'Tesla', '2', '5'
+-- 'Ioniq 5', 'Hyundai', '2', '6'
+
+-- we got the exact statement what to delete! 
+
+-- Method 1: using DELETE AND SUBQUERY
+-- SET optimizer_switch = 'derived_merge=off';
+
+-- delete from cars 
+-- where id in (select * from (
+-- select max(id) from cars 
+-- group by model,brand
+-- having count(*) > 1) as x);
+
+-- Method 2: using inner join
+-- SET SQL_SAFE_UPDATES = 0;
+
+-- delete from cars 
+-- where id in (select * from (select t2.id from cars t1 
+-- inner join cars t2 on t1.model = t2.model and t1.brand = t2.brand 
+-- where t1.id < t2.id) as x);
+
+-- Method 3 : using Row_number 
+-- delete from cars 
+-- where id in (
+-- select * from (
+-- select id from (
+-- 	select *, row_number() over (partition by model,brand) as rn 
+-- 	from cars ) x )
+-- where x.rn > 1 );
+
+-- Method 4 : using min function
+-- delete from cars 
+-- where id in (select * from 
+-- (select id from cars 
+-- where id not in 
+-- (select min(id) from cars 
+-- group by model, brand ) ) x );
+
+-- select * from cars;
+
+-- Method 5 : using Backup tables.
+-- create table cars_backup 
+-- as
+-- select * from cars where 1=2;
+
+-- insert into cars_backup 
+-- select * from cars where id in
+-- (select min(id) from cars 
+-- group by model,brand)
+
+-- drop table cars 
+
+-- alter table cars_backup rename to cars;
+
+-- Method 6 : using truncate
+-- drop table if exists cars_bkp;
+-- create table if not exists cars_bkp
+-- as
+-- select * from cars where 1=0;
+
+-- insert into cars_bkp
+-- select * from cars
+-- where id in ( select min(id)
+--               from cars
+--               group by model, brand);
+
+-- truncate table cars;
+
+-- insert into cars
+-- select * from cars_bkp;
+
+-- drop table cars_bkp;
+
+-- drop table if exists cars;
+-- create table if not exists cars
+-- (
+--     id      int,
+--     model   varchar(50),
+--     brand   varchar(40),
+--     color   varchar(30),
+--     make    int
+-- );
+-- insert into cars values (1, 'Model S', 'Tesla', 'Blue', 2018);
+-- insert into cars values (2, 'EQS', 'Mercedes-Benz', 'Black', 2022);
+-- insert into cars values (3, 'iX', 'BMW', 'Red', 2022);
+-- insert into cars values (4, 'Ioniq 5', 'Hyundai', 'White', 2021);
+-- insert into cars values (1, 'Model S', 'Tesla', 'Blue', 2018);
+-- insert into cars values (4, 'Ioniq 5', 'Hyundai', 'White', 2021);
+
+-- Method 7 : ID column is also same as well as entire columns
+-- creating a temperory table
+
+-- alter table cars add column row_num int auto_increment primary key ;
+
+-- delete from cars
+-- where row_num not in (select min(row_num)
+--                       from cars
+--                       group by model, brand);
+
+-- alter table cars drop column row_num;
+
+-- select * from cars;
